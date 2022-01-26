@@ -16,3 +16,4 @@ However there is a certain condition where it isn't work when we can not report 
 - Only tested on MacOS using Chrome `Version 97.0.4692.71 (Official Build) (x86_64)`
 - If youtube make changes on their HTML attributes, this extension would not working
 - Currently it's not available in the Chrome Store
+- Don't be confused with the manifest details as this codebase originally from [Page Redder example](https://github.com/GoogleChrome/chrome-extensions-samples/tree/main/examples/page-redder). I am just too lazy to change it.
