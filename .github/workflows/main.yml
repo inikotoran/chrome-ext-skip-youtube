@@ -1,0 +1,43 @@
+name: Run Curl and Send Email with SendGrid
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *' # Run every hour
+
+jobs:
+  check_and_notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run curl command
+        id: curl_request
+        run: |
+          RESPONSE=$(curl 'https://www.wcofun.net/bleach-sennen-kessen-hen-episode-32-english-subbed' -vvv \
+            -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36' > /dev/null 2> >(grep '200'))
+          echo "response=$RESPONSE" >> $GITHUB_ENV
+
+      - name: Check if response is not empty
+        id: check_response
+        run: |
+          if [[ -z "${{ env.response }}" ]]; then
+            echo "Response is empty."
+            echo "send_email=false" >> $GITHUB_ENV
+          else
+            echo "Response is not empty."
+            echo "send_email=true" >> $GITHUB_ENV
+
+      - name: Create GitHub Issue
+        if: ${{ env.send_email == 'true' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const response = `${{ env.response }}`;
+            await github.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: "Curl Response Alert",
+              body: `The curl response is: ${response}`
+            });
