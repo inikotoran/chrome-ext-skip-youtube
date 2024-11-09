@@ -28,6 +28,7 @@ jobs:
           else
             echo "Response is not empty."
             echo "send_email=true" >> $GITHUB_ENV
+          fi
 
       - name: Create GitHub Issue
         if: ${{ env.send_email == 'true' }}
